@@ -6,6 +6,5 @@ def ler():
     try:
         id, text = reader.read()
         return id,text
-    except Exception:
-        GPIO.cleanup()
-        raise
+    except Exception as e:
+        raise e

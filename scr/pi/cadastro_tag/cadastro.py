@@ -11,4 +11,4 @@ def cadastrar(tag):
         requests.post(str(conf.HOST) + '/tag/',json=payload)
         
     except Exception as e :
-        raise
+        raise e
