@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import datetime,time,requests
-from time import process_time
 import RPi.GPIO as GPIO
 from config import Config
 from pi.leitura_tag import ler
@@ -30,9 +29,13 @@ def time_atual():
 
     return data_atual,hora_atual
 
-def enviar_feedback(tag):
+def enviar_feedback(agendamento):
     try:
-        requests.post(conf.HOST + '/feedback/' + tag)
+        payload ={
+            'cadastro': 0,
+            'id_agendamento' : agendamento 
+        }
+        requests.post(conf.HOST + '/email',json=payload)
     except Exception as e:
         raise e
 
@@ -64,7 +67,7 @@ while True:
                 time.sleep(60)
                 _,hora_atual = time_atual()
             reles(3)
-            enviar_feedback(tag)
+            enviar_feedback(agendamento['id_agendamento'])
 
         elif not agendamento['acesso'] and agendamento['data'] == data_atual and agendamento['hora'] == hora_atual:
             print('acesso 0')
@@ -73,7 +76,7 @@ while True:
                 time.sleep(60)
                 _,hora_atual = time_atual()
             reles(3)
-            enviar_feedback(tag)
+            enviar_feedback(agendamento['id_agendamento'])
 
         else:
             raise 'erro ao liberar acesso'
