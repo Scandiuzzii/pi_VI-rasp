@@ -7,15 +7,18 @@ from pi.leitura_tag import ler
 
 def reles(acesso):
     try:
-        if acesso:
-            GPIO.output(pino_rele_1,1)
-            GPIO.output(pino_rele_2,1)
-        elif not acesso:
-            GPIO.output(pino_rele_1,1)
-            GPIO.output(pino_rele_2,0)
-        elif acesso == 3:
+        if acesso == 1: #liga tudo
+            print('acesso 1')
             GPIO.output(pino_rele_1,0)
             GPIO.output(pino_rele_2,0)
+        elif acesso == 0: # liga lampada
+            print('acesso 0')
+            GPIO.output(pino_rele_1,0)
+            GPIO.output(pino_rele_2,1)
+        elif acesso == 3: #desliga tudo
+            print('acesso 3')
+            GPIO.output(pino_rele_1,1)
+            GPIO.output(pino_rele_2,1)
     except Exception as e:
         raise e
 
@@ -35,26 +38,31 @@ def enviar_feedback(agendamento):
             'cadastro': 0,
             'id_agendamento' : agendamento 
         }
-        requests.post(conf.HOST + '/email',json=payload)
+        requests.post(conf.HOST + '/email/',json=payload)
     except Exception as e:
         raise e
 
-pino_rele_1 = 20 # pino rele 1
-pino_rele_2 = 21 # pino rele 2
+pino_rele_1 = 12 # pino rele 1
+pino_rele_2 = 16 # pino rele 2
 
-GPIO.setmode(GPIO.BCM)
+
+#GPIO.setmode(10)
 GPIO.setup(pino_rele_1, GPIO.OUT)
 GPIO.setup(pino_rele_2, GPIO.OUT)
 
 conf = Config()
 
+print('setando rele 0')
+
 reles(3)
+
+print('iniciando leitura agendamento')
 
 while True:
     try:
         tag,_ = ler()
 
-        response = requests.get(conf.HOST + '/tag/agendamento/' + tag)  # pegar agendamento
+        response = requests.get(conf.HOST + '/tag/agendamento/' + str(tag))  # pegar agendamento
         agendamento = response.json()
         print(agendamento)
 
